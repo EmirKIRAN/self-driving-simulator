@@ -32,6 +32,9 @@ def RGB_color_selection(image):
 
     return masked_image
 
+def convert_HSV(image):
+    return cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
 capture = cv2.VideoCapture(os.path.join(videos_dir, video_names[0]))
 
 
