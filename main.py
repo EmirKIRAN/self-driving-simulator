@@ -35,6 +35,27 @@ def RGB_color_selection(image):
 def convert_HSV(image):
     return cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
+def HSV_color_selection(image):
+
+    img = convert_HSV(image)
+
+    #! HSV renk uzayında beyaz şeritleri tespit edebilmek için alt ve üst değerleri belirliyoruz.
+    lower_threshold = np.uint8([0,0,210])
+    upper_threshold = np.uint8([255,30,255])
+    white_mask = cv2.inRange(img, lower_threshold, upper_threshold)
+
+    #! HSV renk uzayında sarı şeritleri tespit edebilmek için alt ve üst değerleri belirliyoruz.
+    lower_threshold = np.uint8([18,80,80])
+    upper_threshold = np.uint8([30,255,255])
+    yellow_mask = cv2.inRange(img, lower_threshold, upper_threshold)
+
+    #! beyaz ve sarı maskedeki görüntüler 'or' ile birleştirildi.
+    mask = cv2.bitwise_or(white_mask, yellow_mask)
+    #! maske ana görselin üzerine uygulandı.
+    masked_image = cv2.bitwise_and(img, img, mask=mask)
+
+    return masked_image
+
 capture = cv2.VideoCapture(os.path.join(videos_dir, video_names[0]))
 
 
@@ -42,7 +63,8 @@ while True:
 
     _, frame = capture.read()
 
-    cv2.imshow('Screen', RGB_color_selection(frame))
+    cv2.imshow('Screen 1', RGB_color_selection(frame))
+    cv2.imshow('Screen 2', HSV_color_selection(frame))
 
     if cv2.waitKey(50)&0xFF == ord('q'):
         break
