@@ -80,6 +80,17 @@ def HLS_color_selection(image):
 
     return masked_image
     
+def get_gray_scale(image):
+    return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+
+def apply_smoothing(image):
+
+    K_SIZE = 13
+    #! İlgili görselleri blur vererek kenar tespitine daha uygun hale getiriyoruz.
+    gaussian_image = cv2.GaussianBlur(image, (K_SIZE, K_SIZE), 0) 
+    return gaussian_image
+
+
 capture = cv2.VideoCapture(os.path.join(videos_dir, video_names[0]))
 
 
@@ -89,10 +100,16 @@ while True:
 
     #cv2.imshow('Screen 1', RGB_color_selection(frame))
     #cv2.imshow('Screen 2', HSV_color_selection(frame))
-    cv2.imshow('Screen 3', HLS_color_selection(frame))
+    hls_image = HLS_color_selection(frame)
+    
     #! En uygun renk uzayının HSL olduğunu belirledik. Artık diğer işlemlere bu renk uzayı ile devam edeceğiz.
     #! Dilerseniz diğer renk uzaylarını da deneyerek aradaki farkı gözlemleyebilirsiniz.
     
+    grayscale_image = get_gray_scale(hls_image) #! Görseli gray-scale formatına çevirerek diğer işlemleri yapabilmeyi sağladık.
+
+
+    cv2.imshow('Screen 1', hls_image)
+    cv2.imshow('Screen 2', grayscale_image)
 
     if cv2.waitKey(50)&0xFF == ord('q'):
         break
