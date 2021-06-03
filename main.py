@@ -106,10 +106,10 @@ while True:
     #! Dilerseniz diğer renk uzaylarını da deneyerek aradaki farkı gözlemleyebilirsiniz.
     
     grayscale_image = get_gray_scale(hls_image) #! Görseli gray-scale formatına çevirerek diğer işlemleri yapabilmeyi sağladık.
-
+    blurring_image = apply_smoothing(grayscale_image)
 
     cv2.imshow('Screen 1', hls_image)
-    cv2.imshow('Screen 2', grayscale_image)
+    cv2.imshow('Screen 2', blurring_image)
 
     if cv2.waitKey(50)&0xFF == ord('q'):
         break
