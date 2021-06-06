@@ -90,6 +90,8 @@ def apply_smoothing(image):
     gaussian_image = cv2.GaussianBlur(image, (K_SIZE, K_SIZE), 0) 
     return gaussian_image
 
+def edge_detector(image, low_threshold=50, high_threshold=150):
+    return cv2.Canny(image, low_threshold, high_threshold)
 
 capture = cv2.VideoCapture(os.path.join(videos_dir, video_names[0]))
 
@@ -107,9 +109,11 @@ while True:
     
     grayscale_image = get_gray_scale(hls_image) #! Görseli gray-scale formatına çevirerek diğer işlemleri yapabilmeyi sağladık.
     blurring_image = apply_smoothing(grayscale_image)
+    edges = edge_detector(blurring_image)
 
     cv2.imshow('Screen 1', hls_image)
     cv2.imshow('Screen 2', blurring_image)
+    cv2.imshow('Screen 3', edges)
 
     if cv2.waitKey(50)&0xFF == ord('q'):
         break
