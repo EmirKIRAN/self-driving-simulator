@@ -93,6 +93,31 @@ def apply_smoothing(image):
 def edge_detector(image, low_threshold=50, high_threshold=150):
     return cv2.Canny(image, low_threshold, high_threshold)
 
+def select_region(image):
+
+    _mask = np.zeros_like(image)
+    #! giriş görüntüsüne bağlı olarak maskeyi doldurmak için 3 kanal veya 1 kanal rengi tanımla
+    if len(image.shape) > 2:
+        num_of_channel = image.shape[2]
+        ignore_mask_color = (255, ) * num_of_channel
+    else:
+        ignore_mask_color = 255
+
+    #! Aşağıdaki alanda çokgenin köşeleri olarak sabit sayıları kullanabildik.
+    #! Ancak farklı boyutlara sahip resimler için geçerli olmayacaktır.
+
+    rows, cols = image.shape[:2]
+    bottom_left = [cols * 0.1, rows * 0.95]
+    top_left = [cols * 0.4, rows * 0.6]
+    bottom_right = [cols * 0.9, rows * 0.95]
+    top_right = [cols * 0.6, rows * 0.6]
+
+    vertices = np.array([[bottom_left, top_left, bottom_right, top_right]], dtype=np.int32)
+    cv2.fillPoly(_mask, vertices, ignore_mask_color)
+    masked_image = cv2.bitwise_and(image, _mask)
+    return masked_image
+    
+
 capture = cv2.VideoCapture(os.path.join(videos_dir, video_names[0]))
 
 
@@ -110,9 +135,15 @@ while True:
     grayscale_image = get_gray_scale(hls_image) #! Görseli gray-scale formatına çevirerek diğer işlemleri yapabilmeyi sağladık.
     blurring_image = apply_smoothing(grayscale_image)
     edges = edge_detector(blurring_image)
+    """
+    ! Canny kenar bulma algoritmasını kullandıktan sonra elde ettiğimiz sonuç oldukça başarıldır.
+    * Fakat ilk olarak amacımız şerit tespit ve takibi olduğu için araba, tabela ve ağaç gibi diğer objeleri ekarte etmeliyiz.
+    * Bunun için her karede belirli alanları alarak işlemlere oradan devam etmeliyiz.
+    """
+    masked = select_region(edges)
 
-    cv2.imshow('Screen 1', hls_image)
-    cv2.imshow('Screen 2', blurring_image)
+    cv2.imshow('Screen 1', masked)
+    #cv2.imshow('Screen 2', blurring_image)
     cv2.imshow('Screen 3', edges)
 
     if cv2.waitKey(50)&0xFF == ord('q'):
