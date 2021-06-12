@@ -119,11 +119,11 @@ def select_region(image):
 
 def hough_transform(image):
     rho = 1
-    theta = np.pi
+    theta = np.pi/180
     threshold = 20
     minLineLength = 20
     maxLineGap = 300
-    return cv2.HoughLinesP(image=image, rho=rho, theta=threshold, threshold=threshold, minLineLength=minLineLength, maxLineGap=maxLineGap)
+    return cv2.HoughLinesP(image, rho = rho, theta = theta, threshold = threshold, minLineLength = minLineLength, maxLineGap = maxLineGap)
 
 capture = cv2.VideoCapture(os.path.join(videos_dir, video_names[0]))
 
@@ -148,9 +148,12 @@ while True:
     * Bunun için her karede belirli alanları alarak işlemlere oradan devam etmeliyiz.
     """
     masked = select_region(edges)
+    hough_lines = hough_transform(masked)
+    #! hough transform fonksiyonu ile elde edilen cizgiler resim uzerinde cizdiriliyor.
+    
 
     cv2.imshow('Screen 1', masked)
-    cv2.imshow('Screen 3', edges)
+    cv2.imshow('Screen 2', edges)
 
     if cv2.waitKey(50)&0xFF == ord('q'):
         break
