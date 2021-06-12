@@ -125,6 +125,16 @@ def hough_transform(image):
     maxLineGap = 300
     return cv2.HoughLinesP(image, rho = rho, theta = theta, threshold = threshold, minLineLength = minLineLength, maxLineGap = maxLineGap)
 
+def draw_line(image, lines, color = [255, 0, 0], thicksness = 2):
+    img = np.copy(image)
+
+    for line in lines:
+        for x1,y1,x2,y2 in line:
+            cv2.line(img, (x1,y1),(x2,y2), color, thicksness)
+    return img
+
+
+
 capture = cv2.VideoCapture(os.path.join(videos_dir, video_names[0]))
 
 
@@ -150,10 +160,9 @@ while True:
     masked = select_region(edges)
     hough_lines = hough_transform(masked)
     #! hough transform fonksiyonu ile elde edilen cizgiler resim uzerinde cizdiriliyor.
-    
+    drawed_image = draw_line(frame, hough_lines)
 
-    cv2.imshow('Screen 1', masked)
-    cv2.imshow('Screen 2', edges)
+    cv2.imshow('Screen', drawed_image)
 
     if cv2.waitKey(50)&0xFF == ord('q'):
         break
