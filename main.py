@@ -116,7 +116,14 @@ def select_region(image):
     cv2.fillPoly(_mask, vertices, ignore_mask_color)
     masked_image = cv2.bitwise_and(image, _mask)
     return masked_image
-    
+
+def hough_transform(image):
+    rho = 1
+    theta = np.pi
+    threshold = 20
+    minLineLength = 20
+    maxLineGap = 300
+    return cv2.HoughLinesP(image=image, rho=rho, theta=threshold, threshold=threshold, minLineLength=minLineLength, maxLineGap=maxLineGap)
 
 capture = cv2.VideoCapture(os.path.join(videos_dir, video_names[0]))
 
@@ -143,7 +150,6 @@ while True:
     masked = select_region(edges)
 
     cv2.imshow('Screen 1', masked)
-    #cv2.imshow('Screen 2', blurring_image)
     cv2.imshow('Screen 3', edges)
 
     if cv2.waitKey(50)&0xFF == ord('q'):
