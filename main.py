@@ -133,6 +133,31 @@ def draw_line(image, lines, color = [255, 0, 0], thicksness = 2):
             cv2.line(img, (x1,y1),(x2,y2), color, thicksness)
     return img
 
+def average_slop_intercept(lines):
+
+    left_lines = []
+    left_weights = []
+    right_lines = []
+    right_weights = []
+
+    for line in lines:
+        for x1,y1,x2,y2 in line:
+            if x1 == x2:
+                continue
+            slope = (y2 - y1) / (x2 - x1)
+            intercept = y1 - (slope * x1)
+            length = np.sqrt(((y2 - y1)**2) + ((x2 - x1)**2))
+            if slope < 0:
+                left_lines.append((slope, intercept))
+                left_weights.append((length))
+            else:
+                right_lines.append((slope, intercept))
+                right_weights.append((length))
+    
+    left_lane = np.dot(left_weights, left_lines) / np.sum(left_weights) if len(left_weights)>0 else None
+    right_lane = np.dot(right_weights, right_lines) / np.sum(right_weights) if len(right_weights) > 0 else None
+
+    return left_lane, right_lane
 
 
 capture = cv2.VideoCapture(os.path.join(videos_dir, video_names[0]))
