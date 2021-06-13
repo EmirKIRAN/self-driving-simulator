@@ -159,6 +159,17 @@ def average_slop_intercept(lines):
 
     return left_lane, right_lane
 
+def pixel_points(y1,y2,line):
+    
+    if line is None:
+        return None
+    slope, intercept = line
+    x1 = int((y1 - intercept)/slope)
+    x2 = int((y2 - intercept)/slope)
+    y1 = int(y1)
+    y2 = int(y2)
+
+    return ((x1,y1),(x2,y2))
 
 capture = cv2.VideoCapture(os.path.join(videos_dir, video_names[0]))
 
